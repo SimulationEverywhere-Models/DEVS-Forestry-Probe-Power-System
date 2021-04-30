@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Models>
+	<Model name="FP Power System" type="coupled" description="a coupled that models a forestry probe's power system">
+		<Inputs>
+			<Port name="weather" type="weather_info_t" description="The tmeperature and visibility at given hours within a year"/>
+			<Port name="ConsumerIn" type="SAD_info_t" description="The power consumer settings: Transmitter transmition frequency, sensor sampling frequency and the amps it pulls"/>
+		</Inputs>
+		<Outputs>
+			<Port name="batteryLevel" type="int" description="The batteries capacitance -> its charge"/>
+		</Outputs>
+		<Files>
+			<File name="main.cpp" type="cpp" location="/"/>
+		</Files>
+	</Model>
+	<Model name="SolarPanel" type="atomic" description="Model of the probes solar panel thats directly affected by the weather">
+		<Inputs>
+			<Port name="Weather" type="weather_info_t" description="The tmeperature and visibility at given hours within a year"/>
+		</Inputs>
+		<Outputs>
+			<Port name="ampsIn" type="int" description="The charge its supplying to the battery"/>
+		</Outputs>
+		<Files>
+			<File name="SolarPanel.hpp" type="hpp" location="/"/>
+		</Files>
+	</Model>
+	<Model name="Battery" type="atomic" description="Model of the probes battery thats affected by the solar panel and the power consumers. The simulations point of interest">
+		<Inputs>
+			<Port name="ampsIn" type="int" description="The charge suplid by the solar pannel"/>
+			<Port name="ampsOut" type="int" description="The ampH pulled by the power consumers"/>
+		</Inputs>
+		<Outputs>
+			<Port name="batteryLevel" type="int" description="The batteries remaining capacitance after being affected"/>
+		</Outputs>
+		<Files>
+			<File name="Battery.hpp" type="hpp" location="/"/>
+		</Files>
+	</Model>
+	<Model name="SenderReceiver" type="atomic" description="Models the transmitter and receiver of the probe. receives sensor information and passes it along to the sensors. Part of the power consumers">
+		<Inputs>
+			<Port name="SAD_info" type="SAD_info_t" description="the SenderReceiver and sensor settings packed in a specified data structure"/>
+		</Inputs>
+		<Outputs>
+			<Port name="ampsOut" type="int" description="The amph consumed by the senderReceiver when stransmitting or receivng state"/>
+			<Port name="sensor_info" type="Sensor_info_t" description="Sensor settings received that will be sent to the sensor model"/>
+		</Outputs>
+		<Files>
+			<File name="SenderReceiver.hpp" type="hpp" location="/"/>
+		</Files>
+	</Model>
+	<Model name="Sensors" type="atomic" description="Models the probes sensors power consumption. Part of the power consumers">
+		<Inputs>
+			<Port name="sensor_info" type="Sensor_info_t" description="The sensor settings received from the senderReceiver"/>
+		</Inputs>
+		<Outputs>
+			<Port name="ampsOut" type="int" description="the ampH consumed by the sensors"/>
+		</Outputs>
+		<Files>
+			<File name="Sensors.hpp" type="hpp" location="/"/>
+		</Files>
+	</Model>
+	<Model name="PowerConsumers" type="coupled" description="Encompases all the power consumer models">
+		<Inputs>
+			<Port name="SAD_info" type="SAD_info_t" description="Power consumer settings"/>
+		</Inputs>
+		<Outputs>
+			<Port name="ampsOut" type="int" description="the total ampH of all the powerconsumer atomic models"/>
+		</Outputs>
+		<Files>
+			<File name="PowerConsumers.cpp" type="cpp" location="/"/>
+		</Files>
+	</Model>
+</Models>
